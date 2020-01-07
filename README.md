@@ -1,2 +1,2 @@
-# spmat_coo
-C-scrap class for working with a sparse matrix with a COO representation.
+# spmat_coo 0.0.0.
+
