@@ -8,9 +8,9 @@ main(int argc, char *argv[])
    unsigned    i, j;
    unsigned    a, b, c, d;
    struct spmat_coo *x = spmat_coo_new();
-   double u[4] = {1, 1, 1, 1};
-   double v[4] = {1, 1, 1, 1};
-   double wrk[4];
+   double      u[4] = { 1, 1, 1, 1 };
+   double      v[4] = { 1, 1, 1, 1 };
+   double      wrk[4];
 
    spmat_coo_insert(x, 0, 0, 1);
    spmat_coo_insert(x, 1, 1, 1);
@@ -31,7 +31,7 @@ main(int argc, char *argv[])
       printf("%d--%f\n", i, v[i]);
    }
 #endif
- 
+
 
    spmat_coo_free(&x);
 
