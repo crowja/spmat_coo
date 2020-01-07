@@ -1,2 +1,2 @@
-# spmat_coo 0.0.0.
+# spmat_coo 0.1.0-dev0.
 

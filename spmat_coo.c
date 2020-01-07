@@ -1,6 +1,6 @@
 /**
  *  @file spmat_coo.c
- *  @version 0.0.0
+ *  @version 0.1.0-dev0
  *  @date Mon Jan  6 19:53:07 CST 2020
  *  @copyright 2020 John A. Crow
  *  @license Unlicense <http://unlicense.org/>
@@ -66,7 +66,7 @@ spmat_coo_free(struct spmat_coo **pp)
 const char *
 spmat_coo_version(void)
 {
-   return "0.0.0";
+   return "0.1.0-dev0";
 }
 
 static int
