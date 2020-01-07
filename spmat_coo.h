@@ -1,7 +1,7 @@
 /**
  *  @file spmat_coo.h
  *  @version 0.1.0-dev0
- *  @date Mon Jan  6 19:53:07 CST 2020
+ *  @date Mon Jan  6 20:51:27 CST 2020
  *  @copyright 2020 John A. Crow
  *  @license Unlicense <http://unlicense.org/>
  */

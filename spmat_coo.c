@@ -1,7 +1,7 @@
 /**
  *  @file spmat_coo.c
  *  @version 0.1.0-dev0
- *  @date Mon Jan  6 19:53:07 CST 2020
+ *  @date Mon Jan  6 20:51:27 CST 2020
  *  @copyright 2020 John A. Crow
  *  @license Unlicense <http://unlicense.org/>
  */
@@ -220,10 +220,12 @@ spmat_coo_spmv(int trans, double *wrk, unsigned m, struct spmat_coo *a, double c
          j = (a->x)[k].j;
       }
       wrk[i] += (a->x)[k].v * x[j * incx];
+#if 0
       printf("DEBUG WRK[%d] = %f\n", i, wrk[i]);
+#endif
    }
 
-   for (i = 0; i < m; i++)
+   for (i = 0; i < m; i++) 
       y[i * incy] = cx * wrk[i] + cy * y[i * incy];
 
    return 0;
