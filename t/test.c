@@ -54,7 +54,7 @@ test_constr(void)
 {
    struct spmat_coo *z;
 
-   _printf_test_name("test_constr()", "spmat_coo_new, spmat_coo_free");
+   _printf_test_name("test_constr", "spmat_coo_new, spmat_coo_free");
 
    z = spmat_coo_new();
    ASSERT("Constructor test", z);
@@ -68,7 +68,7 @@ test_compact(void)
 {
    struct spmat_coo *z = spmat_coo_new();
 
-   _printf_test_name("test_compact()", "spmat_coo_compact");
+   _printf_test_name("test_compact", "spmat_coo_compact");
 
    ASSERT("Constructor test, pt 1", z);
 
@@ -82,7 +82,7 @@ test_insert(void)
    struct spmat_coo *z;
    double      x = 1.23;                    /* TODO */
 
-   _printf_test_name("test_insert()", "spmat_coo_insert");
+   _printf_test_name("test_insert", "spmat_coo_insert");
 
    z = spmat_coo_new();
    ASSERT("Constructor test, pt 1", z);
@@ -98,7 +98,7 @@ test_shape(void)
    struct spmat_coo *z;
    unsigned    a, b, c, d;
 
-   _printf_test_name("test_shape()", "spmat_coo_insert, spmat_coo_shape");
+   _printf_test_name("test_shape", "spmat_coo_insert, spmat_coo_shape");
 
    z = spmat_coo_new();
    spmat_coo_insert(z, 40, 4000, 200.0);
@@ -122,7 +122,7 @@ test_stub(void)
    struct spmat_coo *z;
    double      x = 1.23;                    /* TODO */
 
-   _printf_test_name("test_stub()", NULL);
+   _printf_test_name("test_stub", NULL);
 
    z = spmat_coo_new();
    ASSERT("Constructor test, pt 1", z);
@@ -132,7 +132,6 @@ test_stub(void)
    ASSERT_EQUALS(NULL, z);
 }
 #endif
-
 
 int
 main(void)
