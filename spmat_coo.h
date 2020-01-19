@@ -1,18 +1,13 @@
 /**
  *  @file spmat_coo.h
  *  @version 0.1.2-dev0
- *  @date Mon Jan  6 20:51:27 CST 2020
+ *  @date Sat Jan 18 19:16:38 CST 2020
  *  @copyright 2020 John A. Crow
  *  @license Unlicense <http://unlicense.org/>
  */
 
 #ifndef _SPMAT_COO_H_
 #define _SPMAT_COO_H_
-
-#ifdef  _PACKAGE_NAME
-#undef  _PACKAGE_NAME
-#endif
-#define _PACKAGE_NAME "spmat_coo"
 
 struct spmat_coo;
 
@@ -37,23 +32,18 @@ void        spmat_coo_free(struct spmat_coo **pp);
  *  @param[in] x FIXME
     @returns FIXME
  */
+const char *spmat_coo_version(void);
 int         spmat_coo_init(struct spmat_coo *p, void *x);
 
-/**
- *  @brief Return the version of this package.
- *  @returns Version string.
- */
-const char *spmat_coo_version(void);
-
-int         spmat_coo_compact(struct spmat_coo *p, double tol);
+void        spmat_coo_colsums(struct spmat_coo *p, unsigned n, double *c);
+void        spmat_coo_compact(struct spmat_coo *p, double tol);
 int         spmat_coo_copy(struct spmat_coo *p, struct spmat_coo *q);
 int         spmat_coo_dump(struct spmat_coo *p);
 int         spmat_coo_insert(struct spmat_coo *p, unsigned i, unsigned j, double v);
+void        spmat_coo_mksym(struct spmat_coo *p);
+void        spmat_coo_reset(struct spmat_coo *p);
+void        spmat_coo_rowsums(struct spmat_coo *p, unsigned m, double *r);
 void        spmat_coo_shape(struct spmat_coo *p, unsigned *minrow, unsigned *maxrow,
                             unsigned *mincol, unsigned *maxcol);
-int         spmat_coo_spmv(int trans, double *wrk, unsigned m, struct spmat_coo *a,
-                           double cx, unsigned incx, double *x, double cy, unsigned incy,
-                           double *y);
-
 
 #endif

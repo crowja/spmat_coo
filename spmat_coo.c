@@ -1,7 +1,7 @@
 /**
  *  @file spmat_coo.c
  *  @version 0.1.2-dev0
- *  @date Mon Jan  6 20:51:27 CST 2020
+ *  @date Sat Jan 18 19:16:38 CST 2020
  *  @copyright 2020 John A. Crow
  *  @license Unlicense <http://unlicense.org/>
  */
@@ -29,11 +29,10 @@ struct spmat_coo_triple {
 };
 
 struct spmat_coo {
-   unsigned    len;                         /* number of triples */
-   unsigned    size;                        /* size of triples buffer */
+   unsigned    nnz;                         /* number of triples */
+   unsigned    size;                        /* alloced size of list */
    unsigned    extend;                      /* buffer extension */
-   struct spmat_coo_triple *x;              /* list of triples */
-   double     *wrk;                         /* used only if needed */
+   struct spmat_coo_triple *list;           /* list of triples */
 };
 
 struct spmat_coo *
@@ -45,11 +44,10 @@ spmat_coo_new(void)
    if (_IS_NULL(tp))
       return NULL;
 
-   tp->len = 0;
+   tp->nnz = 0;
    tp->size = 0;
    tp->extend = 1024;
-   tp->x = NULL;
-   tp->wrk = NULL;
+   tp->list = NULL;
 
    return tp;
 }
@@ -57,8 +55,7 @@ spmat_coo_new(void)
 void
 spmat_coo_free(struct spmat_coo **pp)
 {
-   _FREE((*pp)->x);
-   _FREE((*pp)->wrk);
+   _FREE((*pp)->list);
    _FREE(*pp);
    *pp = NULL;
 }
@@ -67,6 +64,23 @@ const char *
 spmat_coo_version(void)
 {
    return "0.1.2-dev0";
+}
+
+void
+spmat_coo_colsums(struct spmat_coo *p, unsigned n, double *c)
+{
+   unsigned    j, k;
+
+   for (j = 0; j < n; j++)
+      c[j] = 0;                                  /* initialize the colsums */
+
+   for (k = 0; k < p->nnz; k++)
+      if (p->list[k].j < n)
+         c[p->list[k].j] += p->list[k].v;        /* update */
+
+   printf("COLSUMS ARE ...\n");
+   for (j = 0; j < n; j++)
+      printf("%f\n", c[j]);
 }
 
 static int
@@ -88,69 +102,69 @@ _cmp(const void *a, const void *b)
    return 0;
 }
 
-int
+void
 spmat_coo_compact(struct spmat_coo *p, double tol)
 {
    unsigned    k, k0;
 
    tol = fabs(tol);
 
-   qsort(p->x, p->len, sizeof(struct spmat_coo_triple), _cmp);
+   qsort(p->list, p->nnz, sizeof(struct spmat_coo_triple), _cmp);
 
    /* Combine (add) consecutive locations with repeated i, j */
-   for (k = 1, k0 = 0; k < p->len; k++) {
-      if (p->x[k].i == p->x[k0].i && p->x[k].j == p->x[k0].j) {
-         printf("Found a twin with %d and %d\n", p->x[k].i, p->x[k].j);
-         p->x[k0].v += p->x[k].v;
+   for (k = 1, k0 = 0; k < p->nnz; k++) {
+      if (p->list[k].i == p->list[k0].i && p->list[k].j == p->list[k0].j) {
+         /* TODO remove next line */
+         printf("Found a twin with %d and %d\n", p->list[k].i, p->list[k].j);
+         p->list[k0].v += p->list[k].v;
       }
       else {
          k0 += 1;
-         p->x[k0].i = p->x[k].i;
-         p->x[k0].j = p->x[k].j;
-         p->x[k0].v = p->x[k].v;
+         p->list[k0].i = p->list[k].i;
+         p->list[k0].j = p->list[k].j;
+         p->list[k0].v = p->list[k].v;
       }
    }
 
-   p->len = k0 + 1;
+   p->nnz = k0 + 1;
 
    /* Remove all zero elements */
-   for (k = 0, k0 = 0; k < p->len; k++) {
-      if (fabs(p->x[k].v) < tol) {               /* found a zero */
-         printf("Found a zero with %d and %d\n", p->x[k].i, p->x[k].j);
-      }
-      else {
-         p->x[k0].i = p->x[k].i;
-         p->x[k0].j = p->x[k].j;
-         p->x[k0].v = p->x[k].v;
+   for (k = 0, k0 = 0; k < p->nnz; k++) {
+      if (fabs(p->list[k].v) > tol) {
+         p->list[k0].i = p->list[k].i;
+         p->list[k0].j = p->list[k].j;
+         p->list[k0].v = p->list[k].v;
          k0 += 1;
       }
    }
 
-   p->len = k0;
-
-   return 0;
+   p->nnz = k0;
 }
-
-#if 0
-/*** spmat_coo_copy() ***/
 
 int
 spmat_coo_copy(struct spmat_coo *p, struct spmat_coo *q)
 {
+   unsigned    k;
+   int         rc = 0;
 
-   /* Do some magic here ... */
+   spmat_coo_reset(q);
+
+   for (k = 0; k < p->nnz; k++) {
+      rc = spmat_coo_insert(q, p->list[k].i, p->list[k].j, p->list[k].v);
+      if (rc)
+         return rc;
+   }
 
    return 0;
 }
-#endif
 
 int
 spmat_coo_dump(struct spmat_coo *p)
 {
    unsigned    k;
 
-   for (k = 0; k < p->len; k++)
-      printf("%d\t%d\t%e\n", p->x[k].i, p->x[k].j, p->x[k].v);
+   for (k = 0; k < p->nnz; k++)
+      printf("%u\t%u\t%e\n", p->list[k].i, p->list[k].j, p->list[k].v);
 
    return 0;
 }
@@ -160,23 +174,76 @@ spmat_coo_insert(struct spmat_coo *p, unsigned i, unsigned j, double v)
 {
    struct spmat_coo_triple *y;
 
-   if (p->len == p->size) {
-      y = realloc(p->x, (p->size + p->extend) * sizeof(struct spmat_coo_triple));
+   if (p->nnz == p->size) {
+      y = realloc(p->list, (p->size + p->extend) * sizeof(struct spmat_coo_triple));
 
       if (_IS_NULL(y))
          return 1;
 
-      p->x = y;
+      p->list = y;
       p->size += p->extend;
    }
 
-   p->x[p->len].i = i;
-   p->x[p->len].j = j;
-   p->x[p->len].v = v;
+   p->list[p->nnz].i = i;
+   p->list[p->nnz].j = j;
+   p->list[p->nnz].v = v;
 
-   p->len += 1;
+   p->nnz += 1;
 
    return 0;
+}
+
+void
+spmat_coo_mksym(struct spmat_coo *p)
+{
+   unsigned    nnz0 = p->nnz;
+   unsigned    k;
+
+   /**
+    *  Using nnz0 in the first loop rather than p->nnz since p->nnz
+    *  will be changing as we go.
+    *
+    *  Basically we're adding a new element for each existing one, in
+    *  effect adding the transpose to the original. We'll then compress
+    *  and divide by two.
+    */
+
+   for (k = 0; k < nnz0; k++) {
+      unsigned    i = p->list[k].i;
+      unsigned    j = p->list[k].j;
+      double      v = p->list[k].v;
+      spmat_coo_insert(p, j, i, v);
+   }
+
+   spmat_coo_compact(p, 0.0);
+
+   for (k = 0; k < p->nnz; k++)
+      p->list[k].v /= 2;
+}
+
+void
+spmat_coo_reset(struct spmat_coo *p)
+{
+   if (!_IS_NULL(p))
+      p->nnz = 0;
+}
+
+void
+spmat_coo_rowsums(struct spmat_coo *p, unsigned m, double *r)
+{
+   unsigned    i, k;
+
+   for (i = 0; i < m; i++)
+      r[i] = 0;                                  /* initialize the rowsums */
+
+   for (k = 0; k < p->nnz; k++)
+      if (p->list[k].i < m)
+         r[p->list[k].i] += p->list[k].v;        /* update */
+
+   printf("ROWSUMS ARE ...\n");
+   for (i = 0; i < m; i++)
+      printf("%f\n", r[i]);
+
 }
 
 void
@@ -190,9 +257,9 @@ spmat_coo_shape(struct spmat_coo *p, unsigned *minrow, unsigned *maxrow, unsigne
    *mincol = UINT_MAX;
    *maxcol = 0;
 
-   for (k = 0; k < p->len; k++) {
-      i = (p->x)[k].i;
-      j = (p->x)[k].j;
+   for (k = 0; k < p->nnz; k++) {
+      i = (p->list)[k].i;
+      j = (p->list)[k].j;
       *minrow = i < *minrow ? i : *minrow;
       *maxrow = i > *maxrow ? i : *maxrow;
       *mincol = j < *mincol ? j : *mincol;
@@ -200,36 +267,6 @@ spmat_coo_shape(struct spmat_coo *p, unsigned *minrow, unsigned *maxrow, unsigne
    }
 }
 
-int
-spmat_coo_spmv(int trans, double *wrk, unsigned m, struct spmat_coo *a, double cx,
-               unsigned incx, double *x, double cy, unsigned incy, double *y)
-{
-   unsigned    i, j, k;
-
-   for (i = 0; i < m; i++)
-      wrk[i] = 0;
-
-   /* wrk = a x or transpose(a) x */
-   for (k = 0; k < a->len; k++) {
-      if (trans) {                               /* transpose(a) */
-         i = (a->x)[k].j;
-         j = (a->x)[k].i;
-      }
-      else {
-         i = (a->x)[k].i;
-         j = (a->x)[k].j;
-      }
-      wrk[i] += (a->x)[k].v * x[j * incx];
-#if 0
-      printf("DEBUG WRK[%d] = %f\n", i, wrk[i]);
-#endif
-   }
-
-   for (i = 0; i < m; i++) 
-      y[i * incy] = cx * wrk[i] + cy * y[i * incy];
-
-   return 0;
-}
 
 #undef  _IS_NULL
 #undef  _FREE
