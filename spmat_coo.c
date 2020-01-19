@@ -114,8 +114,10 @@ spmat_coo_compact(struct spmat_coo *p, double tol)
    /* Combine (add) consecutive locations with repeated i, j */
    for (k = 1, k0 = 0; k < p->nnz; k++) {
       if (p->list[k].i == p->list[k0].i && p->list[k].j == p->list[k0].j) {
+#if 0
          /* TODO remove next line */
          printf("Found a twin with %d and %d\n", p->list[k].i, p->list[k].j);
+#endif
          p->list[k0].v += p->list[k].v;
       }
       else {
@@ -158,15 +160,13 @@ spmat_coo_copy(struct spmat_coo *p, struct spmat_coo *q)
    return 0;
 }
 
-int
+void
 spmat_coo_dump(struct spmat_coo *p)
 {
    unsigned    k;
 
    for (k = 0; k < p->nnz; k++)
       printf("%u\t%u\t%e\n", p->list[k].i, p->list[k].j, p->list[k].v);
-
-   return 0;
 }
 
 int
@@ -178,7 +178,7 @@ spmat_coo_insert(struct spmat_coo *p, unsigned i, unsigned j, double v)
       y = realloc(p->list, (p->size + p->extend) * sizeof(struct spmat_coo_triple));
 
       if (_IS_NULL(y))
-         return 1;
+         return -1;
 
       p->list = y;
       p->size += p->extend;

@@ -38,7 +38,7 @@ int         spmat_coo_init(struct spmat_coo *p, void *x);
 void        spmat_coo_colsums(struct spmat_coo *p, unsigned n, double *c);
 void        spmat_coo_compact(struct spmat_coo *p, double tol);
 int         spmat_coo_copy(struct spmat_coo *p, struct spmat_coo *q);
-int         spmat_coo_dump(struct spmat_coo *p);
+void        spmat_coo_dump(struct spmat_coo *p);
 int         spmat_coo_insert(struct spmat_coo *p, unsigned i, unsigned j, double v);
 void        spmat_coo_mksym(struct spmat_coo *p);
 void        spmat_coo_reset(struct spmat_coo *p);
