@@ -30,12 +30,12 @@ main(void)
    printf("ROWS FROM %d TO %d\n", mincol, maxcol);
 
    /*
-   spmat_coo_spmv(int trans, double *wrk, unsigned m, struct spmat_coo *a, double cx,
-                  unsigned incx, double *x, double cy, unsigned incy, double *y)
-   */
+      spmat_coo_spmv(int trans, double *wrk, unsigned m, struct spmat_coo *a, double cx,
+      unsigned incx, double *x, double cy, unsigned incy, double *y)
+    */
 
 #if 1
-               spmat_coo_spmv(0, wrk, N, x, 1.0, 1, y, 0.0, 1, y);
+   spmat_coo_spmv(0, wrk, N, x, 1.0, 1, y, 0.0, 1, y);
    for (i = 0; i < N; i++)
       printf("%d --> %10.2f\n", i, y[i]);
 #endif
