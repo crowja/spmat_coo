@@ -16,7 +16,8 @@ INDENT_FLAGS = -TFILE -Tsize_t -Tuint8_t -Tuint16_t -Tuint32_t -Tuint64_t
 .PHONY: check check-examples scheck-examples vcheck scheck echeck indent stamp clean
 
 TESTS = t/test
-EXAMPLES = ex/ex_1 ex/ex_2 ex/ex_3 ex/ex_4
+##EXAMPLES = ex/ex_1 ex/ex_2 ex/ex_3 ex/ex_4
+EXAMPLES = ex/ex_1 ex/ex_2 ex/ex_5
 
 spmat_coo.o: spmat_coo.c spmat_coo.h
 	$(CC) -c $(CPPFLAGS) $(CFLAGS) -o $@ spmat_coo.c
