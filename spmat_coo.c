@@ -1,7 +1,7 @@
 /**
  *  @file spmat_coo.c
  *  @version 0.3.0-dev0
- *  @date Sat Jan 18 19:16:38 CST 2020
+ *  @date Sun Jan 19 20:11:15 CST 2020
  *  @copyright 2020 John A. Crow
  *  @license Unlicense <http://unlicense.org/>
  */
@@ -193,6 +193,62 @@ spmat_coo_insert(struct spmat_coo *p, unsigned i, unsigned j, double v)
    return 0;
 }
 
+struct spmat_coo_iter {
+   void       *x;
+   const struct spmat_coo *m;               /* coo matrix to iterate on */
+   unsigned    k;                           /* current index */
+};
+
+struct spmat_coo_iter *
+spmat_coo_iter_new(const struct spmat_coo *m)
+{
+   /**
+    *  A very simple iterator over the nonzero elements. Things likely
+    *  will get weird if the source matrix m changes during the iterations!
+    */
+
+   struct spmat_coo_iter *tp;
+
+   tp = (struct spmat_coo_iter *) malloc(sizeof(struct spmat_coo_iter));
+   if (_IS_NULL(tp))
+      return NULL;
+
+   if (_IS_NULL(m))
+      return NULL;
+
+   tp->m = m;
+   tp->k = 0;
+
+   return tp;
+}
+
+void
+spmat_coo_iter_free(struct spmat_coo_iter **pp)
+{
+   _FREE(*pp);
+   *pp = NULL;
+}
+
+int
+spmat_coo_iter_next(struct spmat_coo_iter *p, unsigned *i, unsigned *j, double *v)
+{
+   if (p->k < p->m->nnz) {
+      *i = p->m->list[p->k].i;
+      *j = p->m->list[p->k].j;
+      *v = p->m->list[p->k].v;
+      p->k++;
+      return 1;
+   }
+   else
+      return 0;
+}
+
+void
+spmat_coo_iter_reset(struct spmat_coo_iter *p)
+{
+   p->k = 0;
+}
+
 void
 spmat_coo_mksym(struct spmat_coo *p)
 {
@@ -267,6 +323,44 @@ spmat_coo_shape(struct spmat_coo *p, unsigned *minrow, unsigned *maxrow, unsigne
    }
 }
 
+#if 0
+struct spmat_coo_iter {
+   void       *x;
+   const struct spmat_coo *mat;
+   unsigned    k;                           /* current index */
+};
+
+struct spmat_coo_iter *
+spmat_coo_iter_new(const struct spmat_coo *mat)
+{
+   struct spmat_coo_iter *tp;
+
+   tp = (struct spmat_coo_iter *) malloc(sizeof(struct spmat_coo_iter));
+   if (_IS_NULL(tp))
+      return NULL;
+
+   if (_IS_NULL(mat))
+      return NULL;
+
+   tp->mat = mat;
+   tp->k = 0;
+
+   return tp;
+}
+
+void
+spmat_coo_iter_free(struct spmat_coo_iter **pp)
+{
+   _FREE(*pp);
+   *pp = NULL;
+}
+
+void
+spmat_coo_iter_reset(struct spmat_coo_iter *p)
+{
+   p->k = 0;
+}
+#endif
 
 #undef  _IS_NULL
 #undef  _FREE

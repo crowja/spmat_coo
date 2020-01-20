@@ -1,7 +1,7 @@
 /**
  *  @file spmat_coo.h
  *  @version 0.3.0-dev0
- *  @date Sat Jan 18 19:16:38 CST 2020
+ *  @date Sun Jan 19 20:11:15 CST 2020
  *  @copyright 2020 John A. Crow
  *  @license Unlicense <http://unlicense.org/>
  */
@@ -10,6 +10,7 @@
 #define _SPMAT_COO_H_
 
 struct spmat_coo;
+struct spmat_coo_iter;
 
 /**
  *  @brief Constructor.
@@ -45,5 +46,11 @@ void        spmat_coo_reset(struct spmat_coo *p);
 void        spmat_coo_rowsums(struct spmat_coo *p, unsigned m, double *r);
 void        spmat_coo_shape(struct spmat_coo *p, unsigned *minrow, unsigned *maxrow,
                             unsigned *mincol, unsigned *maxcol);
+
+struct spmat_coo_iter *spmat_coo_iter_new(const struct spmat_coo *p);
+void        spmat_coo_iter_free(struct spmat_coo_iter **pp);
+int         spmat_coo_iter_next(struct spmat_coo_iter *p, unsigned *i, unsigned *j,
+                                double *v);
+void        spmat_coo_iter_reset(struct spmat_coo_iter *p);
 
 #endif

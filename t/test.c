@@ -115,7 +115,52 @@ test_shape(void)
    ASSERT_EQUALS(NULL, z);
 }
 
-#if 0                                            /* 14 yy */
+static void
+test_iter(void)
+{
+   struct spmat_coo *z;
+   struct spmat_coo_iter *iter;
+   unsigned    ilist[5] = { 50, 1, 40, 2, 30 };
+   unsigned    jlist[5] = { 4, 3, 2, 1, 0 };
+   double      vlist[5] = { 10.0, 11.0, 12.0, 13.0, 14.0 };
+   unsigned    i, j, k;
+   double      v;
+
+   _printf_test_name("test_iter", "spmat_coo_iter");
+
+   z = spmat_coo_new();
+   for (k = 0; k < 5; k++)
+      spmat_coo_insert(z, ilist[k], jlist[k], vlist[k]);
+
+   iter = spmat_coo_iter_new(z);
+
+   k = 0;
+   while (spmat_coo_iter_next(iter, &i, &j, &v)) {
+      ASSERT_EQUALS(i, ilist[k]);
+      ASSERT_EQUALS(j, jlist[k]);
+      ASSERT("Testing doubles", _two_doubles_equal(v, vlist[k]));
+      k++;
+   }
+   ASSERT_EQUALS(5, k);
+
+   spmat_coo_iter_reset(iter);
+
+   k = 0;
+   while (spmat_coo_iter_next(iter, &i, &j, &v)) {
+      ASSERT_EQUALS(i, ilist[k]);
+      ASSERT_EQUALS(j, jlist[k]);
+      ASSERT("Testing doubles", _two_doubles_equal(v, vlist[k]));
+      k++;
+   }
+   ASSERT_EQUALS(5, k);
+
+   spmat_coo_iter_free(&iter);
+   ASSERT_EQUALS(NULL, iter);
+   spmat_coo_free(&z);
+   ASSERT_EQUALS(NULL, z);
+}
+
+#if 0                                            /* 15 yy */
 static void
 test_stub(void)
 {
@@ -142,6 +187,7 @@ main(void)
    RUN(test_insert);
    RUN(test_compact);
    RUN(test_shape);
+   RUN(test_iter);
 
    return TEST_REPORT();
 }
