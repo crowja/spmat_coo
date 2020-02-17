@@ -6,35 +6,35 @@
 #include "spmat_coo.h"
 #include "t/tinytest.h"
 
-#ifdef  _COLOR_CODE
-#undef  _COLOR_CODE
+#ifdef  COLOR_CODE
+#undef  COLOR_CODE
 #endif
-#define _COLOR_CODE       0x1B
+#define COLOR_CODE       0x1B
 
-#ifdef  _COLOR_RED
-#undef  _COLOR_RED
+#ifdef  COLOR_RED
+#undef  COLOR_RED
 #endif
-#define _COLOR_RED        "[1;31m"
+#define COLOR_RED        "[1;31m"
 
-#ifdef  _COLOR_GREEN
-#undef  _COLOR_GREEN
+#ifdef  COLOR_GREEN
+#undef  COLOR_GREEN
 #endif
-#define _COLOR_GREEN      "[1;32m"
+#define COLOR_GREEN      "[1;32m"
 
-#ifdef  _COLOR_YELLOW
-#undef  _COLOR_YELLOW
+#ifdef  COLOR_YELLOW
+#undef  COLOR_YELLOW
 #endif
-#define _COLOR_YELLOW     "[1;33m"
+#define COLOR_YELLOW     "[1;33m"
 
-#ifdef  _COLOR_RESET
-#undef  _COLOR_RESET
+#ifdef  COLOR_RESET
+#undef  COLOR_RESET
 #endif
-#define _COLOR_RESET      "[0m"
+#define COLOR_RESET      "[0m"
 
 static void
-_printf_test_name(char *name, char *info)
+printf_test_name(char *name, char *info)
 {
-   printf("%c%s%s%c%s", _COLOR_CODE, _COLOR_YELLOW, name, _COLOR_CODE, _COLOR_RESET);
+   printf("%c%s%s%c%s", COLOR_CODE, COLOR_YELLOW, name, COLOR_CODE, COLOR_RESET);
 
    if (NULL != info)
       printf(" [%s]\n", info);
@@ -43,7 +43,7 @@ _printf_test_name(char *name, char *info)
 }
 
 static int
-_two_doubles_equal(double x, double y)
+two_doubles_equal(double x, double y)
 {
    double      t = fabs(x) + fabs(y);
    return fabs(x - y) < 4 * DBL_EPSILON * t ? 1 : 0;
@@ -54,7 +54,7 @@ test_constr(void)
 {
    struct spmat_coo *z;
 
-   _printf_test_name("test_constr", "spmat_coo_new, spmat_coo_free");
+   printf_test_name("test_constr", "spmat_coo_new, spmat_coo_free");
 
    z = spmat_coo_new();
    ASSERT("Constructor test", z);
@@ -68,7 +68,7 @@ test_compact(void)
 {
    struct spmat_coo *z = spmat_coo_new();
 
-   _printf_test_name("test_compact", "spmat_coo_compact");
+   printf_test_name("test_compact", "spmat_coo_compact");
 
    ASSERT("Constructor test, pt 1", z);
 
@@ -82,11 +82,11 @@ test_insert(void)
    struct spmat_coo *z;
    double      x = 1.23;                    /* TODO */
 
-   _printf_test_name("test_insert", "spmat_coo_insert");
+   printf_test_name("test_insert", "spmat_coo_insert");
 
    z = spmat_coo_new();
    ASSERT("Constructor test, pt 1", z);
-   ASSERT("Here's a test ...", _two_doubles_equal(x, 1.23));
+   ASSERT("Here's a test ...", two_doubles_equal(x, 1.23));
 
    spmat_coo_free(&z);
    ASSERT_EQUALS(NULL, z);
@@ -98,7 +98,7 @@ test_shape(void)
    struct spmat_coo *z;
    unsigned    a, b, c, d;
 
-   _printf_test_name("test_shape", "spmat_coo_insert, spmat_coo_shape");
+   printf_test_name("test_shape", "spmat_coo_insert, spmat_coo_shape");
 
    z = spmat_coo_new();
    spmat_coo_insert(z, 40, 4000, 200.0);
@@ -126,7 +126,7 @@ test_iter(void)
    unsigned    i, j, k;
    double      v;
 
-   _printf_test_name("test_iter", "spmat_coo_iter");
+   printf_test_name("test_iter", "spmat_coo_iter");
 
    z = spmat_coo_new();
    for (k = 0; k < 5; k++)
@@ -138,7 +138,7 @@ test_iter(void)
    while (spmat_coo_iter_next(iter, &i, &j, &v)) {
       ASSERT_EQUALS(i, ilist[k]);
       ASSERT_EQUALS(j, jlist[k]);
-      ASSERT("Testing doubles", _two_doubles_equal(v, vlist[k]));
+      ASSERT("Testing doubles", two_doubles_equal(v, vlist[k]));
       k++;
    }
    ASSERT_EQUALS(5, k);
@@ -149,7 +149,7 @@ test_iter(void)
    while (spmat_coo_iter_next(iter, &i, &j, &v)) {
       ASSERT_EQUALS(i, ilist[k]);
       ASSERT_EQUALS(j, jlist[k]);
-      ASSERT("Testing doubles", _two_doubles_equal(v, vlist[k]));
+      ASSERT("Testing doubles", two_doubles_equal(v, vlist[k]));
       k++;
    }
    ASSERT_EQUALS(5, k);
@@ -167,11 +167,11 @@ test_stub(void)
    struct spmat_coo *z;
    double      x = 1.23;                    /* TODO */
 
-   _printf_test_name("test_stub", NULL);
+   printf_test_name("test_stub", NULL);
 
    z = spmat_coo_new();
    ASSERT("Constructor test, pt 1", z);
-   ASSERT("Here's a test ...", _two_doubles_equal(x, 1.23));
+   ASSERT("Here's a test ...", two_doubles_equal(x, 1.23));
 
    spmat_coo_free(&z);
    ASSERT_EQUALS(NULL, z);

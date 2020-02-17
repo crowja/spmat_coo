@@ -1,13 +1,13 @@
 /**
  *  @file spmat_coo.h
  *  @version 0.4.0-dev0
- *  @date Sun Jan 19 20:11:15 CST 2020
+ *  @date Sun Feb 16, 2020 08:35:02 PM CST
  *  @copyright 2020 John A. Crow
  *  @license Unlicense <http://unlicense.org/>
  */
 
-#ifndef _SPMAT_COO_H_
-#define _SPMAT_COO_H_
+#ifndef SPMAT_COO_H
+#define SPMAT_COO_H
 
 struct spmat_coo;
 struct spmat_coo_iter;
